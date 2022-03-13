@@ -10,6 +10,7 @@
 /* Includes */
 
 #include "rv32esim.h"
+#include "cmake_config.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,8 +36,10 @@ typedef struct {
     uint8_t rs1;
     uint8_t rs2;
     uint32_t imm;
-    bool compressed;
     bool invalid;
+#if EXTENSION_C
+    bool compressed;
+#endif
 } decoded_inst_t;
 
 /* Function/Class Declarations */

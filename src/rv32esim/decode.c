@@ -10,6 +10,7 @@
 #include "rv32esim.h"
 #include "logging.h"
 #include "common.h"
+#include "cmake_config.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,15 +19,22 @@
 /* Static Function Declarations */
 
 static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint32_t instruction);
+
+#if EXTENSION_C
 static void decode16(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint16_t instruction);
+#endif
 
 /* Function Implementations */
 
 __attribute__ ((visibility ("hidden"))) void decode(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint32_t instruction) {
+#if EXTENSION_C
     if ((instruction & 0b1) && (instruction & 0b10))//32 bit instruction
         decode32(state, decoded_inst, instruction);
     else
         decode16(state, decoded_inst, (uint16_t)instruction);
+#else
+    decode32(state, decoded_inst, instruction);
+#endif
 
     rvlog(2, "funct3 = 0x%X", decoded_inst->funct3);
     rvlog(2, "funct7 = 0x%X", decoded_inst->funct7);
@@ -35,7 +43,9 @@ __attribute__ ((visibility ("hidden"))) void decode(const rv32esim_state_t* stat
     rvlog(2, "rs1 = x%u", decoded_inst->rs1);
     rvlog(2, "rs2 = x%u", decoded_inst->rs2);
     rvlog(2, "imm = 0x%X", decoded_inst->imm);
+#if EXTENSION_C
     rvlog(2, "compressed = %s", decoded_inst->compressed ? "Yes" : "No");
+#endif
     rvlog(2, "invalid = %s", decoded_inst->invalid ? "Yes" : "No");
 }
 
@@ -43,8 +53,10 @@ __attribute__ ((visibility ("hidden"))) void decode(const rv32esim_state_t* stat
 
 static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint32_t instruction) {
     decoded_inst->invalid = !instruction || (instruction == 0xFFFFFFFF);
-    decoded_inst->compressed = false;
     decoded_inst->opcode = (instruction >> 2) & 0b11111;
+#if EXTENSION_C
+    decoded_inst->compressed = false;
+#endif
 
     switch (decoded_inst->opcode) {
         //R-type
@@ -103,7 +115,9 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
     }
 }
 
+#if EXTENSION_C
 static void decode16(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint16_t instruction) {
     decoded_inst->compressed = true;
     assert(false);//TODO implement
 }
+#endif

@@ -47,7 +47,9 @@ typedef struct rv32esim_state_t {
     uint32_t mem_len;//Length of memory (also of memory in simulated cpu's address space)
     void* mem;//NOTE if the host does not support unaligned accesses, this must be alligned to 4 bytes
 
-    bool logging_enabled;
+    bool logging_enabled;//Ignored if disabled in CMAKE
+
+    uint64_t ninsts_executed;
 
     /* Things for rvsim internal use */
 } rv32esim_state_t;

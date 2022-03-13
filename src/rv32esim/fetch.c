@@ -22,6 +22,7 @@
 /* Function Implementations */
 
 __attribute__ ((visibility ("hidden"))) uint32_t fetch(rv32esim_state_t* state) {//Returns 0 (invalid risc-v opcode) if anything goes wrong
+#if !UNSAFE_MODE
     if (state->mem_len < 2) {
         rvlog(1, "ifetch failed, not enough bytes in memory to read");
         return 0;//Not enough bytes for an instruction
@@ -31,7 +32,9 @@ __attribute__ ((visibility ("hidden"))) uint32_t fetch(rv32esim_state_t* state) 
         rvlog(1, "ifetch failed, PC out of bounds");
         return 0;//Out of bounds pc (need at least 32 bits in bounds for the way fetch is implemented (for simplicity of checking))
     }
+#endif
 
+#if EXTENSION_C
 #if LITTLE_ENDIAN//Little endian host makes this easy+fast :)
     if (state->pc & 0b10)
         return ((uint16_t*)state->mem)[state->pc / 2];
@@ -53,5 +56,12 @@ __attribute__ ((visibility ("hidden"))) uint32_t fetch(rv32esim_state_t* state) 
         else//16 bit instruction
             return inst_lsbyte | (((uint32_t)memory[state->pc + 1]) << 8);
     }
+#endif
+#else
+#if LITTLE_ENDIAN
+    return ((uint32_t*)state->mem)[state->pc / 4];
+#else
+    return ((uint32_t)memory[state->pc]) | (((uint32_t)memory[state->pc + 1]) << 8) | (((uint32_t)memory[state->pc + 2]) << 16) | (((uint32_t)memory[state->pc + 3]) << 24);
+#endif
 #endif
 }

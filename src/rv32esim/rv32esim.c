@@ -48,6 +48,8 @@ rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
     //Execute
     rv32esim_return_code_t result = execute(state, &decoded_inst);
     rvlog(0, " PC = 0x%llX | result = 0x%llX | Tick Ends", state->pc, (uint32_t)result);
+
+    ++(state->ninsts_executed);
     return result;
 }
 

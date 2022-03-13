@@ -36,6 +36,9 @@ static void byte_write_callback(struct rv32esim_state_t* state, uint8_t data, ui
 /* Function Implementations */
 
 int main() {
+    //Print version info
+    fprintf(stderr, "librv32esim version %u.%u\n\n", rv32esim_version_major(), rv32esim_version_minor());
+
     //Initialize state
     rv32esim_state_t state;
     memset(&state, 0, sizeof(rv32esim_state_t));
@@ -44,6 +47,8 @@ int main() {
     state.mem_len = num_mem_bytes;
     state.mem_w_callback8 = byte_write_callback;
     state.logging_enabled = true;
+    //state.logging_enabled = false;
+    state.ninsts_executed = 0;
 
     //Load file for testing
     const char* filename = "test.bin";

@@ -28,10 +28,14 @@ static void print_string(const char* str);
 static void print_uint(uint64_t uint);
 static void print_uint_bin(uint32_t uint);
 //static void rvsim_printf(const char* str, ...);
+void test_iterations(uint32_t cycles);
 
 /* Function Implementations */
 
 int main() {
+    test_iterations(10000000);
+    return 0;
+
     //printf("Testing");
     print_string("Hello world! C running on RISC-V!\n");
     //print_string("\xAA\xBB\xCC\xDD\xEE\xFF");
@@ -104,4 +108,9 @@ static void print_uint_bin(uint32_t uint) {
 
     if (!first_one_encountered)
             *((volatile uint8_t*)-1) = '0';
+}
+
+void test_iterations(uint32_t iterations) {
+    for (uint32_t i = 0; i < iterations; ++i)
+        __asm__ volatile("nop");
 }
