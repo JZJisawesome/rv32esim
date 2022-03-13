@@ -17,7 +17,7 @@ set(CMAKE_C_FLAGS_DEBUG "-O0")
 set(CMAKE_C_FLAGS_RELEASE "-Ofast -flto=auto -fuse-linker-plugin -floop-nest-optimize -fipa-pta -fno-semantic-interposition -fdevirtualize-at-ltrans -fno-plt -fstdarg-opt -frename-registers -fweb -ftree-vectorize")
 
 #rv32esim Library Targets
-set(RV32ESIM_SOURCES src/rv32esim/rv32esim.c src/rv32esim/common.h src/rv32esim/logging.c src/rv32esim/logging.h src/rv32esim/cmake_config.h.in include/rv32esim.h)
+set(RV32ESIM_SOURCES src/rv32esim/rv32esim.c src/rv32esim/common.h src/rv32esim/fetch.c src/rv32esim/fetch.h src/rv32esim/logging.c src/rv32esim/logging.h src/rv32esim/cmake_config.h.in include/rv32esim.h)
 
 if (CMAKE_C_BYTE_ORDER STREQUAL LITTLE_ENDIAN)
     set(IS_LITTLE_ENDIAN 1)

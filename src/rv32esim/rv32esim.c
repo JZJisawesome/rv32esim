@@ -11,7 +11,7 @@
 /* Includes */
 
 #include "rv32esim.h"
-//#include "fetch.h"
+#include "fetch.h"
 //#include "decode.h"
 //#include "execute.h"
 #include "logging.h"
@@ -36,11 +36,10 @@
 
 rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
     rvlog(0, " Begin Tick: PC = 0x%llX", state->pc);
-    /*rvsim_debug_log(0, "!----- BEGIN TICK: PC = 0x%llX ----------------------!\n", state->pc);
 
-    uint32_t instruction = rvsim_fetch(state);
-    rvsim_debug_log(1, "instruction = 0x%llX\n", instruction);
-
+    uint32_t instruction = fetch(state);
+    rvlog(1, "instruction = 0x%llX\n", instruction);
+    /*
     decoded_inst_t decoded_inst;
     rvsim_decode(&decoded_inst, instruction);
 

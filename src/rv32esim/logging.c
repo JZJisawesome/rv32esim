@@ -15,7 +15,7 @@
 
 /* Function Implementations */
 
-__attribute__((visibility ("hidden"))) void rvlog_func(uint8_t indent, const char* restrict str, ...) {
+__attribute__ ((visibility ("hidden"))) void rvlog_func(uint8_t indent, const char* restrict str, ...) {
     fputs(stderr, "!!!rv32esim> ");
 
     while (indent--)
