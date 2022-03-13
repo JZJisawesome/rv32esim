@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(rvsim32ie VERSION 0.1)
 
-set(SOURCES src/main.c src/rvsim/common.h include/rvsim32ie.h)
+set(SOURCES src/main.c src/rvsim32ie/rvsim32ie.c src/rvsim32ie/common.h include/rvsim32ie.h)
 #set(SOURCES src/main.c src/rvsim/rvsim.c src/rvsim/memory.c src/rvsim/memory.h src/rvsim/fetch.c src/rvsim/fetch.h src/rvsim/endianness.h src/rvsim/decode.c src/rvsim/decode.h src/rvsim/execute.c src/rvsim/execute.h src/rvsim/debug_logging.c src/rvsim/debug_logging.h include/rvsim.h)
 
 add_executable(rvsim32ie ${SOURCES})

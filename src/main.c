@@ -25,7 +25,7 @@
 
 /* Static Function Declarations */
 
-static void byte_write_callback(struct rvsim_state_t* state, uint8_t data, uint64_t address) {
+static void byte_write_callback(struct rvsim32ie_state_t* state, uint8_t data, uint64_t address) {
     putchar((uint8_t)data);
 #ifndef NDEBUG
     fflush(stdout);
@@ -36,8 +36,8 @@ static void byte_write_callback(struct rvsim_state_t* state, uint8_t data, uint6
 
 int main() {
     //Initialize state
-    rvsim_state_t state;
-    memset(&state, 0, sizeof(rvsim_state_t));
+    rvsim32ie_state_t state;
+    memset(&state, 0, sizeof(rvsim32ie_state_t));
     const size_t num_mem_bytes = 0xFFFFFFFFF;
     state.mem = (uint8_t*)malloc(num_mem_bytes);
     state.mem_len = num_mem_bytes;
@@ -53,7 +53,7 @@ int main() {
     assert(fread(state.mem, 1, file_size, bin) == file_size);
     fclose(bin);
 
-    while (rvsim_tick(&state) != ECALL);
+    while (rvsim32ie_tick(&state) != ECALL);
 
     free(state.mem);
     return 0;
