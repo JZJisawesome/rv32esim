@@ -186,10 +186,10 @@ static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uin
             return a << (b & 0b11111);
         case 0b010:
             rvlog(2, "type = slt\n");
-            return ((int32_t)a) < ((int32_t)b);//TODO ensure this is correct
+            return (((int32_t)a) < ((int32_t)b)) ? 1 : 0;//TODO ensure this is correct
         case 0b011:
             rvlog(2, "type = sltu\n");
-            return a < b;
+            return (a < b) ? 1 : 0;
         case 0b100:
             rvlog(2, "type = xor\n");
             return a ^ b;

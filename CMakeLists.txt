@@ -1,6 +1,6 @@
 #Common options
 cmake_minimum_required(VERSION 3.21)
-project(rv32esim VERSION 0.1)
+project(rv32esim VERSION 0.2)
 #Needed for clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

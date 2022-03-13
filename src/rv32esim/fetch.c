@@ -29,7 +29,7 @@ __attribute__ ((visibility ("hidden"))) uint32_t fetch(rv32esim_state_t* state) 
 
     if ((state->pc < state->mem_begin_address) || (state->pc > (state->mem_begin_address + state->mem_len - 4))) {
         rvlog(1, "ifetch failed, PC out of bounds");
-        return 0;//Out of bounds pc (need at least 32 bits in bounds for the way fetch is implemented)
+        return 0;//Out of bounds pc (need at least 32 bits in bounds for the way fetch is implemented (for simplicity of checking))
     }
 
 #if LITTLE_ENDIAN//Little endian host makes this easy+fast :)
@@ -43,6 +43,15 @@ __attribute__ ((visibility ("hidden"))) uint32_t fetch(rv32esim_state_t* state) 
             return ((uint16_t*)state->mem)[state->pc / 2];
     }
 #else
-#error TODO implement fetching if host is not known to be little endian
+    uint8_t* memory = (uint8_t*)state->mem;
+    if (state->pc & 0b10)
+        return ((uint32_t)memory[state->pc]) | (((uint32_t)memory[state->pc + 1]) << 8);
+    else {//Can't assume instruction is 16 bits
+        uint8_t inst_lsbyte = memory[state->pc];
+        if ((inst_lsbyte & 0b1) && (inst_lsbyte & 0b10))//32 bit instruction
+            return inst_lsbyte | (((uint32_t)memory[state->pc + 1]) << 8) | (((uint32_t)memory[state->pc + 2]) << 16) | (((uint32_t)memory[state->pc + 3]) << 24);
+        else//16 bit instruction
+            return inst_lsbyte | (((uint32_t)memory[state->pc + 1]) << 8);
+    }
 #endif
 }
