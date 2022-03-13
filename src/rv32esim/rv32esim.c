@@ -1,4 +1,4 @@
-/* rvsim32ie
+/* rv32esim
  * By: John Jekel
  *
  * RISC-V Architecture Simulator (single-hart, little endian, RV32ICE)
@@ -10,7 +10,7 @@
 
 /* Includes */
 
-#include "rvsim32ie.h"
+#include "rv32esim.h"
 //#include "fetch.h"
 //#include "decode.h"
 //#include "execute.h"
@@ -33,7 +33,7 @@
 
 /* Function Implementations */
 
-rvsim32ie_return_code_t rvsim32ie_tick(rvsim32ie_state_t* state) {
+rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
     /*rvsim_debug_log(0, "!----- BEGIN TICK: PC = 0x%llX ----------------------!\n", state->pc);
 
     uint32_t instruction = rvsim_fetch(state);
