@@ -13,7 +13,7 @@
 #include "rv32esim.h"
 #include "fetch.h"
 #include "decode.h"
-//#include "execute.h"
+#include "execute.h"
 #include "logging.h"
 #include "cmake_config.h"
 
@@ -35,7 +35,7 @@
 /* Function Implementations */
 
 rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
-    rvlog(0, " Begin Tick: PC = 0x%llX", state->pc);
+    rvlog(0, " PC = 0x%llX | Tick Begins", state->pc);
 
     //Fetch
     uint32_t instruction = fetch(state);
@@ -46,12 +46,9 @@ rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
     decode(state, &decoded_inst, instruction);
 
     //Execute
-    //TODO
-    /*
-    rvsim_return_code_t result = rvsim_execute(state, &decoded_inst);
-    rvsim_debug_log(0, "!----- END TICK:   PC = 0x%llX | result = 0x%llX -----!\n\n", state->pc, (uint64_t)result);
-    return result;*/
-    return ECALL;//TODO implement this
+    rv32esim_return_code_t result = execute(state, &decoded_inst);
+    rvlog(0, " PC = 0x%llX | result = 0x%llX | Tick Ends", state->pc, (uint32_t)result);
+    return result;
 }
 
 uint8_t rv32esim_version_major() {

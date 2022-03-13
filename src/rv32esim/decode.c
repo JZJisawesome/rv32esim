@@ -4,27 +4,16 @@
  * Code to decode RISC-V instructions
 */
 
-/* Constants And Defines */
-
-//TODO
-
 /* Includes */
 
 #include "decode.h"
+#include "rv32esim.h"
 #include "logging.h"
 #include "common.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
-
-/* Types */
-
-//TODO
-
-/* Variables */
-
-//TODO
 
 /* Static Function Declarations */
 
