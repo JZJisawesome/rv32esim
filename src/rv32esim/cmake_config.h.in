@@ -1,0 +1,14 @@
+/* CMake config file for rv32esim configuration
+ * By: John Jekel
+*/
+
+#ifndef CMAKE_CONFIG_H
+#define CMAKE_CONFIG_H
+
+/* Constants And Defines */
+
+#define VERSION_MAJOR @rv32esim_VERSION_MAJOR@
+#define VERSION_MINOR @rv32esim_VERSION_MINOR@
+#define LITTLE_ENDIAN @IS_LITTLE_ENDIAN@
+
+#endif//CMAKE_CONFIG_H

@@ -18,6 +18,8 @@
 
 /* Macros */
 
+//TODO
+
 /* Types */
 
 //TODO decide what to do with callbacks vs return codes
@@ -52,6 +54,8 @@ typedef struct rv32esim_state_t {
 
 /* Function Declarations */
 
-rv32esim_return_code_t rvsim32ie_tick(rv32esim_state_t* state);
+rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state);
+uint8_t rv32esim_version_major();
+uint8_t rv32esim_version_minor();
 
 #endif//RVSIM32IE_H

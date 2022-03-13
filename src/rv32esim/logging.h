@@ -10,6 +10,7 @@
 /* Includes */
 
 #include "rv32esim.h"
+#include "cmake_config.h"
 
 #include <stdarg.h>
 #include <stdint.h>
