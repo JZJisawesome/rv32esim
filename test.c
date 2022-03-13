@@ -89,7 +89,7 @@ static void print_uint_bin(uint64_t uint) {
     *((volatile uint8_t*)-1) = '0';
     *((volatile uint8_t*)-1) = 'b';
 
-    uint64_t mask = 1ul << 63;
+    uint64_t mask = 1ull << 63;
     bool first_one_encountered = false;
     while (mask) {
 

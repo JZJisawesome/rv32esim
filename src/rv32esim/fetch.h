@@ -9,21 +9,9 @@
 
 /* Includes */
 
-#include <stdint.h>
-
 #include "rv32esim.h"
 
-/* Constants And Defines */
-
-//TODO
-
-/* Types */
-
-//TODO
-
-/* Global Variables */
-
-//TODO
+#include <stdint.h>
 
 /* Function/Class Declarations */
 
