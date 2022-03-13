@@ -39,7 +39,7 @@ int main() {
     //Initialize state
     rv32esim_state_t state;
     memset(&state, 0, sizeof(rv32esim_state_t));
-    const size_t num_mem_bytes = 0xFFFFFFFFF;
+    const size_t num_mem_bytes = 0x7FFFFFFF;
     state.mem = (uint8_t*)malloc(num_mem_bytes);
     state.mem_len = num_mem_bytes;
     state.mem_w_callback8 = byte_write_callback;

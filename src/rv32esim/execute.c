@@ -39,7 +39,7 @@ static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uin
 static bool branch_operation(const rv32esim_state_t* state, uint8_t funct3, uint32_t rs1, uint32_t rs2);
 static uint32_t mem_read(rv32esim_state_t* state, uint8_t funct3, uint32_t address);
 static void mem_write(rv32esim_state_t* state, uint8_t funct3, uint32_t data, uint32_t address);
-static bool callback_needed(const rv32esim_state_t* state, uint64_t address);
+static bool callback_needed(const rv32esim_state_t* state, uint32_t address);
 
 /* Function Implementations */
 
@@ -48,7 +48,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case OP: {
             rvlog(1, "pretty opcode = \"OP\"\n");
 
-            uint64_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
+            uint32_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
             rvlog(2, "result (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", result, result, result);
 
             if (decoded_inst->rd)
@@ -60,7 +60,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case OP_IMM: {
             rvlog(1, "pretty opcode = \"OP-IMM\"\n");
 
-            uint64_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), decoded_inst->imm);
+            uint32_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), decoded_inst->imm);
             rvlog(2, "result (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", result, result, result);
 
             if (decoded_inst->rd)
@@ -72,7 +72,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case LUI: {
             rvlog(1, "pretty opcode = \"LUI\"\n");
 
-            uint64_t result = decoded_inst->imm;
+            uint32_t result = decoded_inst->imm;
 
             if (decoded_inst->rd)
                 state->x[decoded_inst->rd - 1] = result;
@@ -83,7 +83,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case AUIPC: {
             rvlog(1, "pretty opcode = \"AUIPC\"\n");
 
-            uint64_t result = decoded_inst->imm + state->pc;
+            uint32_t result = decoded_inst->imm + state->pc;
             rvlog(2, "result = 0x%llx\n", result);
 
             if (decoded_inst->rd)
@@ -108,7 +108,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case JAL: {
             rvlog(1, "pretty opcode = \"JAL\"\n");
 
-            uint64_t result = state->pc + SEQ_PC_OFFSET();
+            uint32_t result = state->pc + SEQ_PC_OFFSET();
             rvlog(2, "link value = 0x%llx\n", result);
 
             if (decoded_inst->rd)
@@ -120,7 +120,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case JALR: {
             rvlog(1, "pretty opcode = \"JALR\"\n");
 
-            uint64_t result = state->pc + SEQ_PC_OFFSET();
+            uint32_t result = state->pc + SEQ_PC_OFFSET();
             rvlog(2, "link value = 0x%llx\n", result);
 
             if (decoded_inst->rd)
@@ -141,9 +141,9 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case LOAD: {
             rvlog(1, "pretty opcode = \"LOAD\"\n");
 
-            uint64_t address = GET_X(decoded_inst->rs1) + decoded_inst->imm;
+            uint32_t address = GET_X(decoded_inst->rs1) + decoded_inst->imm;
             rvlog(2, "address = 0x%llX\n", address);
-            uint64_t data = mem_read(state, decoded_inst->funct3, address);
+            uint32_t data = mem_read(state, decoded_inst->funct3, address);
             rvlog(2, "data = 0x%llX\n", data);
 
             if (decoded_inst->rd)
@@ -155,9 +155,9 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case STORE: {
             rvlog(0, "STORE\"\n");
 
-            uint64_t address = GET_X(decoded_inst->rs1) + decoded_inst->imm;
+            uint32_t address = GET_X(decoded_inst->rs1) + decoded_inst->imm;
             rvlog(2, "address = 0x%llX\n", address);
-            uint64_t data = GET_X(decoded_inst->rs2);
+            uint32_t data = GET_X(decoded_inst->rs2);
             rvlog(2, "data = 0x%llX\n", data);
 
             mem_write(state, decoded_inst->funct3, data, address);
@@ -186,7 +186,7 @@ static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uin
             return a << (b & 0b11111);
         case 0b010:
             rvlog(2, "type = slt\n");
-            return ((int64_t)a) < ((int64_t)b);//TODO ensure this is correct
+            return ((int32_t)a) < ((int32_t)b);//TODO ensure this is correct
         case 0b011:
             rvlog(2, "type = sltu\n");
             return a < b;
@@ -195,7 +195,7 @@ static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uin
             return a ^ b;
         case 0b101:
             rvlog(2, "type = srl/sra\n");
-            return (funct7 & (1 << 5)) ? (((int64_t)a) >> (b & 0b11111)) : (a >> (b & 0b11111));//TODO ensure this is correct
+            return (funct7 & (1 << 5)) ? (((int32_t)a) >> (b & 0b11111)) : (a >> (b & 0b11111));//TODO ensure this is correct
         case 0b110:
             rvlog(2, "type = or\n");
             return a | b;
@@ -220,10 +220,10 @@ static bool branch_operation(const rv32esim_state_t* state, uint8_t funct3, uint
             return rs1 != rs2;
         case 0b100:
             rvlog(2, "type = BLT\n");
-            return ((int64_t)rs1) < ((int64_t)rs2);
+            return ((int32_t)rs1) < ((int32_t)rs2);
         case 0b101:
             rvlog(2, "type = BGE\n");
-            return ((int64_t)rs1) >= ((int64_t)rs2);
+            return ((int32_t)rs1) >= ((int32_t)rs2);
         case 0b110:
             rvlog(2, "type = BLTU\n");
             return rs1 < rs2;
@@ -313,6 +313,6 @@ static void mem_write(rv32esim_state_t* state, uint8_t funct3, uint32_t data, ui
     }
 }
 
-static bool callback_needed(const rv32esim_state_t* state, uint64_t address) {
+static bool callback_needed(const rv32esim_state_t* state, uint32_t address) {
     return (address < state->mem_begin_address) || (address > (state->mem_begin_address + state->mem_len));
 }

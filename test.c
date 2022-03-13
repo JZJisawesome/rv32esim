@@ -26,7 +26,7 @@
 
 static void print_string(const char* str);
 static void print_uint(uint64_t uint);
-static void print_uint_bin(uint64_t uint);
+static void print_uint_bin(uint32_t uint);
 //static void rvsim_printf(const char* str, ...);
 
 /* Function Implementations */
@@ -35,19 +35,19 @@ int main() {
     //printf("Testing");
     print_string("Hello world! C running on RISC-V!\n");
     //print_string("\xAA\xBB\xCC\xDD\xEE\xFF");
-    volatile uint64_t a = 1;
-    volatile uint64_t b = 2;
+    volatile uint32_t a = 1;
+    volatile uint32_t b = 2;
 
     assert((a + b) == 3);
-    assert((a - b) == 0xFFFFFFFFFFFFFFFF);
+    assert((a - b) == 0xFFFFFFFF);
     assert((a << b) == 4);
     assert((a >> b) == 0);
     assert(a < b);
-    volatile int64_t ai = 0x8000000000000000;
-    volatile uint64_t bi = 3;
+    volatile int32_t ai = 0x80000000;
+    volatile uint32_t bi = 3;
     print_uint_bin(ai >> bi);
     print_string("\n");
-    assert((ai >> bi) == 0xF000000000000000);
+    assert((uint32_t)(ai >> bi) == 0xF0000000);
 
     assert((b * bi) == 6);
     assert(false && "Sanity check assert works");
@@ -85,11 +85,11 @@ static void print_uint(uint64_t uint) {//TODO do this more efficiently
     print_string(&buffer[index + 1]);
 }
 
-static void print_uint_bin(uint64_t uint) {
+static void print_uint_bin(uint32_t uint) {
     *((volatile uint8_t*)-1) = '0';
     *((volatile uint8_t*)-1) = 'b';
 
-    uint64_t mask = 1ull << 63;
+    uint32_t mask = 1ull << 31;
     bool first_one_encountered = false;
     while (mask) {
 
