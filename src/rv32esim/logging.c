@@ -16,7 +16,7 @@
 /* Function Implementations */
 
 __attribute__ ((visibility ("hidden"))) void rvlog_func(uint8_t indent, const char* restrict str, ...) {
-    fputs(stderr, "!!!rv32esim> ");
+    fputs("!!!rv32esim>\t", stderr);
 
     while (indent--)
         fputc('\t', stderr);
@@ -26,5 +26,5 @@ __attribute__ ((visibility ("hidden"))) void rvlog_func(uint8_t indent, const ch
     va_start(list, str);
     vfprintf(stderr, str, list);
     va_end(list);
-    putc(stderr, '\n');
+    putc('\n', stderr);
 }

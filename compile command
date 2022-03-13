@@ -1,0 +1,3 @@
+riscv64-unknown-elf-gcc -march=rv32e -mabi=ilp32e -ffreestanding -nostartfiles -static-libgcc -lgcc -mstrict-align -T ../linker.ld ../crt0.s ../test.c
+
+riscv64-unknown-elf-gcc -march=rv32e -mabi=ilp32e -ffreestanding -nostartfiles -static-libgcc -lgcc -mstrict-align -T ../linker.ld ../test.s
