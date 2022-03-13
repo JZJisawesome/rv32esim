@@ -35,9 +35,9 @@
 
 /* Static Function Declarations */
 
-static uint32_t alu_operation(uint8_t funct3, uint8_t funct7, uint32_t a, uint32_t b);
-static bool branch_operation(uint8_t funct3, uint32_t rs1, uint32_t rs2);
-static uint32_t mem_read(const rv32esim_state_t* state, uint8_t funct3, uint32_t address);
+static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uint8_t funct7, uint32_t a, uint32_t b);
+static bool branch_operation(const rv32esim_state_t* state, uint8_t funct3, uint32_t rs1, uint32_t rs2);
+static uint32_t mem_read(rv32esim_state_t* state, uint8_t funct3, uint32_t address);
 static void mem_write(rv32esim_state_t* state, uint8_t funct3, uint32_t data, uint32_t address);
 static bool callback_needed(const rv32esim_state_t* state, uint64_t address);
 
@@ -48,7 +48,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case OP: {
             rvlog(1, "pretty opcode = \"OP\"\n");
 
-            uint64_t result = alu_operation(decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
+            uint64_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
             rvlog(2, "result (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", result, result, result);
 
             if (decoded_inst->rd)
@@ -60,7 +60,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case OP_IMM: {
             rvlog(1, "pretty opcode = \"OP-IMM\"\n");
 
-            uint64_t result = alu_operation(decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), decoded_inst->imm);
+            uint64_t result = alu_operation(state, decoded_inst->funct3, decoded_inst->funct7, GET_X(decoded_inst->rs1), decoded_inst->imm);
             rvlog(2, "result (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", result, result, result);
 
             if (decoded_inst->rd)
@@ -132,7 +132,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
         case BRANCH: {
             rvlog(1, "pretty opcode = \"BRANCH\"\n");
 
-            bool taken = branch_operation(decoded_inst->funct3, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
+            bool taken = branch_operation(state, decoded_inst->funct3, GET_X(decoded_inst->rs1), GET_X(decoded_inst->rs2));
             rvlog(2, "taken = %s\n", taken ? "Yes" : "No");
 
             state->pc += taken ? decoded_inst->imm : SEQ_PC_OFFSET();
@@ -173,15 +173,70 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
 
 /* Static Function Implementations */
 
-__attribute__ ((visibility ("hidden"))) static uint32_t alu_operation(uint8_t funct3, uint8_t funct7, uint32_t a, uint32_t b) {
+static uint32_t alu_operation(const rv32esim_state_t* state, uint8_t funct3, uint8_t funct7, uint32_t a, uint32_t b) {
+    rvlog(2, "operand a (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", a, a, a);
+    rvlog(2, "operand b (dec, hex, signed) = (%llu, 0x%llX, %lld)\n", b, b, b);
 
+    switch (funct3) {
+        case 0b000:
+            rvlog(2, "type = add/sub\n");
+            return (funct7 & (1 << 5)) ? (a - b) : (a + b);
+        case 0b001:
+            rvlog(2, "type = sll\n");
+            return a << (b & 0b11111);
+        case 0b010:
+            rvlog(2, "type = slt\n");
+            return ((int64_t)a) < ((int64_t)b);//TODO ensure this is correct
+        case 0b011:
+            rvlog(2, "type = sltu\n");
+            return a < b;
+        case 0b100:
+            rvlog(2, "type = xor\n");
+            return a ^ b;
+        case 0b101:
+            rvlog(2, "type = srl/sra\n");
+            return (funct7 & (1 << 5)) ? (((int64_t)a) >> (b & 0b11111)) : (a >> (b & 0b11111));//TODO ensure this is correct
+        case 0b110:
+            rvlog(2, "type = or\n");
+            return a | b;
+        case 0b111:
+            rvlog(2, "type = and\n");
+            return a & b;
+        default:
+            assert(false);
+    }
 }
 
-__attribute__ ((visibility ("hidden"))) static bool branch_operation(uint8_t funct3, uint32_t rs1, uint32_t rs2) {
+static bool branch_operation(const rv32esim_state_t* state, uint8_t funct3, uint32_t rs1, uint32_t rs2) {
+    rvlog(2, "rs1 value = %llu\n", rs1);
+    rvlog(2, "rs2 value = %llu\n", rs2);
 
+    switch (funct3) {
+        case 0b000:
+            rvlog(2, "type = BEQ\n");
+            return rs1 == rs2;
+        case 0b001:
+            rvlog(2, "type = BNE\n");
+            return rs1 != rs2;
+        case 0b100:
+            rvlog(2, "type = BLT\n");
+            return ((int64_t)rs1) < ((int64_t)rs2);
+        case 0b101:
+            rvlog(2, "type = BGE\n");
+            return ((int64_t)rs1) >= ((int64_t)rs2);
+        case 0b110:
+            rvlog(2, "type = BLTU\n");
+            return rs1 < rs2;
+        case 0b111:
+            rvlog(2, "type = BGEU\n");
+            return rs1 >= rs2;
+        default://Undefined
+            rvlog(2, "type = Undefined\n");
+            return false;//TODO perhaps allow these to be handled as custom?
+    }
 }
 
-__attribute__ ((visibility ("hidden"))) static uint32_t mem_read(const rv32esim_state_t* state, uint8_t funct3, uint32_t address) {
+static uint32_t mem_read(rv32esim_state_t* state, uint8_t funct3, uint32_t address) {
     if (callback_needed(state, address)) {
         switch (funct3) {
             case 0b000:
@@ -219,10 +274,45 @@ __attribute__ ((visibility ("hidden"))) static uint32_t mem_read(const rv32esim_
     }
 }
 
-__attribute__ ((visibility ("hidden"))) static void mem_write(rv32esim_state_t* state, uint8_t funct3, uint32_t data, uint32_t address) {
-
+static void mem_write(rv32esim_state_t* state, uint8_t funct3, uint32_t data, uint32_t address) {
+    if (callback_needed(state, address)) {
+        switch (funct3) {
+            case 0b000:
+                if (state->mem_w_callback8)
+                    state->mem_w_callback8(state, data, address);
+                return;
+            case 0b001:
+                if (state->mem_w_callback16)
+                    state->mem_w_callback16(state, data, address);
+                return;
+            case 0b010:
+                if (state->mem_w_callback32)
+                    state->mem_w_callback32(state, data, address);
+                return;
+            default:
+                assert(false);
+        }
+    } else {
+#if LITTLE_ENDIAN//Little endian host makes this easy+fast :)
+    switch (funct3) {
+        case 0b000:
+            ((uint8_t*)state->mem)[address - state->mem_begin_address] = (uint8_t)data;
+            return;
+        case 0b001:
+            ((uint16_t*)state->mem)[(address - state->mem_begin_address) / 2] = (uint16_t)data;
+            return;
+        case 0b010:
+            ((uint32_t*)state->mem)[(address - state->mem_begin_address) / 4] = (uint32_t)data;
+            return;
+        default:
+            assert(false);
+    }
+#else
+#error TODO implement fetching if host is not known to be little endian
+#endif
+    }
 }
 
-__attribute__ ((visibility ("hidden"))) static bool callback_needed(const rv32esim_state_t* state, uint64_t address) {
-
+static bool callback_needed(const rv32esim_state_t* state, uint64_t address) {
+    return (address < state->mem_begin_address) || (address > (state->mem_begin_address + state->mem_len));
 }

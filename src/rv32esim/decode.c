@@ -41,7 +41,7 @@ __attribute__ ((visibility ("hidden"))) void decode(const rv32esim_state_t* stat
 
 /* Static Function Implementations */
 
-__attribute__ ((visibility ("hidden"))) static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint32_t instruction) {
+static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint32_t instruction) {
     decoded_inst->invalid = !instruction || (instruction == 0xFFFFFFFF);
     decoded_inst->compressed = false;
     decoded_inst->opcode = (instruction >> 2) & 0b11111;
@@ -103,7 +103,7 @@ __attribute__ ((visibility ("hidden"))) static void decode32(const rv32esim_stat
     }
 }
 
-__attribute__ ((visibility ("hidden"))) static void decode16(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint16_t instruction) {
+static void decode16(const rv32esim_state_t* state, decoded_inst_t* decoded_inst, uint16_t instruction) {
     decoded_inst->compressed = true;
     assert(false);//TODO implement
 }
