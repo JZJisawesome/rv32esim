@@ -45,6 +45,7 @@ rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state) {
     rvsim_return_code_t result = rvsim_execute(state, &decoded_inst);
     rvsim_debug_log(0, "!----- END TICK:   PC = 0x%llX | result = 0x%llX -----!\n\n", state->pc, (uint64_t)result);
     return result;*/
+    return ECALL;//TODO implement this
 }
 
 /* Static Function Implementations */

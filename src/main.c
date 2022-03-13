@@ -42,6 +42,7 @@ int main() {
     state.mem = (uint8_t*)malloc(num_mem_bytes);
     state.mem_len = num_mem_bytes;
     state.mem_w_callback8 = byte_write_callback;
+    state.logging_enabled = true;
 
     //Load file for testing
     const char* filename = "test.bin";

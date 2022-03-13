@@ -1,7 +1,7 @@
 /* common.h
  * By: John Jekel
  *
- * Common things fro rv32esim
+ * Common things for rv32esim
 */
 
 #ifndef COMMON_H
