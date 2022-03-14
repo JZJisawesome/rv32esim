@@ -37,18 +37,17 @@ static void byte_write_callback(struct rv32esim_state_t* state, uint8_t data, ui
 
 int main() {
     //Print version info
-    fprintf(stderr, "librv32esim version %u.%u\n\n", rv32esim_version_major(), rv32esim_version_minor());
+    fputs(rv32esim_version_string(), stderr);
+    fputc('\n', stderr);
+    fputc('\n', stderr);
 
     //Initialize state
     rv32esim_state_t state;
-    memset(&state, 0, sizeof(rv32esim_state_t));
-    const size_t num_mem_bytes = 0x7FFFFFFF;
-    state.mem = (uint8_t*)malloc(num_mem_bytes);
-    state.mem_len = num_mem_bytes;
+    rv32esim_init_state(&state, 0x7FFFFFFF);
     state.mem_w_callback8 = byte_write_callback;
     state.logging_enabled = true;
-    //state.logging_enabled = false;
     state.ninsts_executed = 0;
+    state.log_when_ninsts_ge = 30000000;
 
     //Load file for testing
     const char* filename = "test.bin";
@@ -62,7 +61,7 @@ int main() {
 
     while (rv32esim_tick(&state) != ECALL);
 
-    free(state.mem);
+    rv32esim_free_state(&state);
     return 0;
 }
 

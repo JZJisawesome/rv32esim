@@ -48,16 +48,23 @@ typedef struct rv32esim_state_t {
     void* mem;//NOTE if the host does not support unaligned accesses, this must be alligned to 4 bytes
 
     bool logging_enabled;//Ignored if disabled in CMAKE
-
-    uint64_t ninsts_executed;
+    uint64_t log_when_ninsts_ge;
+    uint64_t ninsts_executed;//Used during logging, may also be of interest externally
 
     /* Things for rvsim internal use */
 } rv32esim_state_t;
 
 /* Function Declarations */
 
+///Initializes state, allocating memory contiguously starting from the hart's address 0, with PC set to zero, ninsts_executed set to 0, logging disabled, and callbacks set to NULL. All other members undefined
+void rv32esim_init_state(rv32esim_state_t* state, uint32_t mem_len);
+///Frees resources in state
+void rv32esim_free_state(rv32esim_state_t* state);
+
 rv32esim_return_code_t rv32esim_tick(rv32esim_state_t* state);
+
 uint8_t rv32esim_version_major();
 uint8_t rv32esim_version_minor();
+const char* rv32esim_version_string();
 
 #endif//RVSIM32IE_H

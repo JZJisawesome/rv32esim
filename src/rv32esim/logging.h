@@ -20,7 +20,11 @@
 #if DISABLE_LOGGING
 #define rvlog(...) ((void)0)
 #else
-#define rvlog(...) do { if (state->logging_enabled) rvlog_func(state->ninsts_executed, __VA_ARGS__); } while (0)
+#define rvlog(...)  do { \
+                        if (state->logging_enabled) \
+                            if (state->ninsts_executed >= state->log_when_ninsts_ge) \
+                                rvlog_func(state->ninsts_executed, __VA_ARGS__); \
+                    } while (0)
 #endif
 
 /* Function/Class Declarations */
