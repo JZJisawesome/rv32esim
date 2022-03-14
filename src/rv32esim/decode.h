@@ -37,7 +37,6 @@ typedef struct {
     uint8_t rs2;
     uint32_t imm;
     bool invalid;
-    bool custom;
 #if EXTENSION_C
     bool compressed;
 #endif

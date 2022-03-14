@@ -171,7 +171,7 @@ __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_
             return SUCCESS;
         }
         default: {
-            rvlog(0, "Custom/Unknown\"");
+            rvlog(1, "pretty opcode = \"Custom/Unknown\"");
             return CUSTOM_OPCODE;
         }
     }

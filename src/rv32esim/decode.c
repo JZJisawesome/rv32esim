@@ -67,7 +67,6 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
             decoded_inst->rs1 = (instruction >> 15) & 0b1111;
             decoded_inst->funct3 = (instruction >> 12) & 0b111;
             decoded_inst->rd = (instruction >> 7) & 0b1111;
-            decoded_inst->custom = false;
             break;
         //I-type
         case LOAD:
@@ -80,7 +79,6 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
             decoded_inst->funct3 = (instruction >> 12) & 0b111;
             decoded_inst->rd = (instruction >> 7) & 0b1111;
             decoded_inst->funct7 = (decoded_inst->funct3 == 0b101) ? instruction >> 25 : 0;//We need funct7 for immediate shifts, otherwise it should be 0 so that execute isn't confused
-            decoded_inst->custom = false;
             break;
         //S-type
         case STORE:
@@ -89,7 +87,6 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
             decoded_inst->rs2 = (instruction >> 20) & 0b1111;
             decoded_inst->rs1 = (instruction >> 15) & 0b1111;
             decoded_inst->funct3 = (instruction >> 12) & 0b111;
-            decoded_inst->custom = false;
             break;
         //B-type
         case BRANCH:
@@ -98,7 +95,6 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
             decoded_inst->rs2 = (instruction >> 20) & 0b1111;
             decoded_inst->rs1 = (instruction >> 15) & 0b1111;
             decoded_inst->funct3 = (instruction >> 12) & 0b111;
-            decoded_inst->custom = false;
             break;
         //U-type
         case LUI:
@@ -106,18 +102,15 @@ static void decode32(const rv32esim_state_t* state, decoded_inst_t* decoded_inst
             rvlog(2, "format = U");
             decoded_inst->imm = instruction & 0b11111111111111111111000000000000;
             decoded_inst->rd = (instruction >> 7) & 0b1111;
-            decoded_inst->custom = false;
             break;
         //J-type
         case JAL:
             rvlog(2, "format = J");
             decoded_inst->imm = SIGN_EXTEND_TO_32(((instruction >> 11) & 0b100000000000000000000) | (instruction & 0b11111111000000000000) | ((instruction >> 9) & 0b100000000000) | ((instruction >> 20) & 0b11111111110), 21);
             decoded_inst->rd = (instruction >> 7) & 0b1111;
-            decoded_inst->custom = false;
             break;
         default:
             rvlog(2, "format = Unknown/Custom");
-            decoded_inst->custom = true;//This is an unused/reserved/custom opcode
     }
 }
 
