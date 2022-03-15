@@ -24,7 +24,7 @@
 
 //TODO decide what to do with callbacks vs return codes
 
-typedef enum {SUCCESS, CUSTOM_OPCODE, ECALL, EBREAK} rv32esim_return_code_t;//TODO others/error codes/success
+typedef enum {SUCCESS, CUSTOM_OPCODE, ECALL, EBREAK, INVALID} rv32esim_return_code_t;//TODO others/error codes/success
 
 typedef struct rv32esim_state_t {
     /* Things that are okay to modify */

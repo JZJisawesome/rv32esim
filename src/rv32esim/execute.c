@@ -50,6 +50,9 @@ static bool callback_needed(const rv32esim_state_t* state, uint32_t address);
 /* Function Implementations */
 
 __attribute__ ((visibility ("hidden"))) rv32esim_return_code_t execute(rv32esim_state_t* state, const decoded_inst_t* decoded_inst) {
+    if (decoded_inst->invalid)
+        return INVALID;
+
     switch (decoded_inst->opcode) {
         case OP: {
             rvlog(1, "pretty opcode = \"OP\"");

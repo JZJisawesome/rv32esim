@@ -45,9 +45,10 @@ int main() {
     rv32esim_state_t state;
     rv32esim_init_state(&state, 0x7FFFFFFF);
     state.mem_w_callback8 = byte_write_callback;
-    state.logging_enabled = true;
+    //state.logging_enabled = true;
+    state.logging_enabled = false;
     state.ninsts_executed = 0;
-    state.log_when_ninsts_ge = 30000000;
+    state.log_when_ninsts_ge = 0;
 
     //Load file for testing
     const char* filename = "test.bin";
@@ -59,7 +60,20 @@ int main() {
     assert(fread(state.mem, 1, file_size, bin) == file_size);
     fclose(bin);
 
-    while (rv32esim_tick(&state) != ECALL);
+    while (true) {
+        rv32esim_return_code_t result = rv32esim_tick(&state);
+
+        if (result == ECALL)
+            break;
+
+        if (result == CUSTOM_OPCODE) {//Treat it as if it was a function call with the pointer of the cstring to pring in a0
+            uint32_t a0 = state.x[9];
+            const char* string_addr = &(((char*)state.mem)[a0]);
+            //printf("String printed: \"%s\", len:%lu, from address %x\n", string_addr, strlen(string_addr), a0);
+            state.pc += 4;
+            fputs(string_addr, stdout);
+        }
+    }
 
     rv32esim_free_state(&state);
     return 0;

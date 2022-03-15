@@ -24,7 +24,7 @@
 
 /* Static Function Declarations */
 
-static void print_string(const char* str);
+extern void print_string(const char* str);
 static void print_uint(uint64_t uint);
 static void print_uint_bin(uint32_t uint);
 //static void rvsim_printf(const char* str, ...);
@@ -33,8 +33,8 @@ void test_iterations(uint32_t cycles);
 /* Function Implementations */
 
 int main() {
-    test_iterations(10000000);
-    return 0;
+    //test_iterations(10000000);
+    //return 0;
 
     //printf("Testing");
     print_string("Hello world! C running on RISC-V!\n");
@@ -70,10 +70,14 @@ void __assert_func(const char* file, int line, const char* function, const char*
 
 /* Static Function Implementations */
 
+/*
 static void print_string(const char* str) {
-    while (*str)
-        *((volatile uint8_t*)-1) = *(str++);
+    volatile char test = *str;
+    //while (*str)
+    //    *((volatile uint8_t*)-1) = *(str++);
+    __asm__ volatile(".insn u CUSTOM_0, x0, 0");
 }
+*/
 
 static void print_uint(uint64_t uint) {//TODO do this more efficiently
     char buffer[32];
